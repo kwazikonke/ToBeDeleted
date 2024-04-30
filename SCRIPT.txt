@@ -1,0 +1,40 @@
+document.getElementById('loginForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            
+            // Get form data
+            const formData = new FormData(event.target);
+
+            // Create request body
+            const requestBody = {};
+            formData.forEach((value, key) => {
+                requestBody[key] = value;
+            });
+
+            // Send login request
+            fetch('/api/auth/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(requestBody)
+            })
+            .then(response => {
+                if (response.ok) {
+                    // Successful login
+                    return response.json();
+                } else {
+                    // Failed login
+                    throw new Error('Login failed');
+                }
+            })
+            .then(data => {
+                // Store JWT token in localStorage
+                localStorage.setItem('token', data.accessToken);
+                // Redirect or perform other actions upon successful login
+                window.location.href = '/dashboard'; // Redirect to dashboard page
+            })
+            .catch(error => {
+                // Display error message
+                document.getElementById('loginMessage').textContent = 'Invalid username or password';
+            });
+        });
